@@ -54,12 +54,16 @@ const AVLNode<Base> *AVLNode<Base>::maxNode() const {
 
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
+    AVLNode<Base>* leftMost = this->right->left;
     AVLNode<Base>* child = this->right;
 
     // If root = currNode
     if (this->root == this) {
         this->root = child;
     }
+
+    // Assign leftMost to node's right ptr
+    this->right = leftMost;
 
     // Move child to where parent was and set curNode as left child
     child->left = this;
@@ -72,12 +76,16 @@ AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
 
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateRight() {
+    AVLNode<Base>* rightMost = this->left->right;
     AVLNode<Base>* child = this->left;
 
     // If root = currNode
     if (this->root == this) {
         this->root = child;
     }
+
+    // Assign rightmost to node's left ptr
+    this->left = rightMost;
 
     // Move child to where parent was and set curNode as left child
     child->right = this;
