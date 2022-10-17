@@ -54,8 +54,8 @@ const AVLNode<Base> *AVLNode<Base>::maxNode() const {
 
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
-    AVLNode<Base>* leftMost = this->right->left;
-    AVLNode<Base>* child = this->right;
+    AVLNode<Base> *leftMost = this->right->left;
+    AVLNode<Base> *child = this->right;
 
     // If root = currNode
     if (this->root == this) {
@@ -76,8 +76,8 @@ AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
 
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateRight() {
-    AVLNode<Base>* rightMost = this->left->right;
-    AVLNode<Base>* child = this->left;
+    AVLNode<Base> *rightMost = this->left->right;
+    AVLNode<Base> *child = this->left;
 
     // If root = currNode
     if (this->root == this) {
@@ -113,41 +113,60 @@ AVLNode<Base> *AVLNode<Base>::doubleRotateRightLeft() {
 template<class Base>
 void AVLTree<Base>::insert(const Base &item) {
     // Declare new node to be inserted
-    AVLNode<Base> *node = new AVLNode<Base>(item);
+    AVLNode<Base> *newNode = new AVLNode<Base>(item);
 
-    // Create a previous and temporary node for iteration
-    AVLNode<Base> *par = NULL;
-    AVLNode<Base> *cur = this->root;
+    // Check if root is NULL
+    if (this->root == NULL) {
+        this->root = newNode;
+        newNode->updateHeight();
+        return;
+    }
 
-    // While temp is not null iterate through tree
-    while (cur) {
-        // If item is the same, return
-        if (!(item < cur->getData()) && !(cur->getData() < item)) {
+    AVLNode<Base> *parNode = NULL;
+    AVLNode<Base> *childNode = this->root;
+
+    int depth = 0;
+    AVLNode<Base> **path = new AVLNode<Base> * [this->root->getHeight()];
+
+    while (childNode) {
+        // Assign parNode to childNode
+        parNode = childNode;
+        // Add child node to path
+        *path[depth] = *childNode;
+
+        // If newNode = currNode, insert as currNode's right child
+        if (!(parNode->getData() < item) && !(item < parNode->getData())) {
             return;
         }
-        par = cur;
-        // If item < temp, temp = left node
-        if (item < cur->data) {
-            cur = cur->left;
+        // If newNode < currNode
+        else if (item < parNode->getData()) {
+            childNode = childNode->getLeft();
+            depth++;
         }
-            // If item > temp, temp = right node
-        else if (cur->data < item) {
-            cur = cur->right;
+        // If newNode > currNode
+        else {
+            childNode = childNode->getRight();
+            depth++;
         }
     }
 
-    // If the root is null then assign root to item
-    if (!root) {
-        this->root = node;
+    // Insertion
+    if (item < parNode->getData()) {
+        parNode->left = newNode;
     }
-        // Insert new node at location left
-    else if (item < par->getData()) {
-        par->left = node;
-    }
-        // Insert new node at location right
     else {
-        par->right = node;
+        parNode->right = newNode;
     }
+
+    // Update parent height
+    newNode->updateHeight();
+    parNode->updateHeight();
+
+
+
+
+
+
 }
 
 template<class Base>
