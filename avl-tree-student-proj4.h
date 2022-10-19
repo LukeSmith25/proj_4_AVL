@@ -99,15 +99,13 @@ AVLNode<Base> *AVLNode<Base>::singleRotateRight() {
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::doubleRotateLeftRight() {
     this->left->singleRotateLeft();
-    this->singleRotateRight();
-    return this;
+    return singleRotateRight();
 }
 
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::doubleRotateRightLeft() {
     this->right->singleRotateRight();
-    this->singleRotateLeft();
-    return this;
+    return singleRotateLeft();;
 }
 
 template<class Base>
@@ -163,113 +161,109 @@ void AVLTree<Base>::insert(const Base &item) {
     parNode->updateHeight();
 
     // Rebalance and pass depth as numOnPath
-
+    rebalancePathToRoot(**path, depth);
 }
 
 template<class Base>
 void AVLTree<Base>::remove(const Base &item) {
-    AVLNode<Base> *parent = this->root;
     AVLNode<Base> *toRemove = this->root;
-    bool complete = false;
 
+    // Check for empty tree
     if (!toRemove) {
-        complete = true;
+        return;
+    }
+    // Parent pointer used for rebalancing
+    AVLNode<Base> *parent = NULL;
+
+    // Path For Rebalancing
+    int depth = 0;
+    AVLNode<Base> **path = new AVLNode<Base>*[32];
+
+    while (!(toRemove->getData() < item && item < toRemove->getData())) {
+        // Move Parent
+        parent = toRemove;
+        // Add toRemove to path
+        *path[depth] = *toRemove;
+        // If item is less than toRemove, search left
+        if (item < toRemove->getData()) {
+            toRemove = toRemove->getLeft();
+        }
+        // If item is greater than toRemove, search right
+        if (toRemove->getData() < item) {
+            toRemove = toRemove->getRight();
+        }
+        depth++;
     }
 
-    while (!complete) {
-        // Key is found
-        if (!(toRemove->data < item) && !(item < toRemove->data)) {
-            // Remove leaf node
-            if (toRemove->left == NULL && toRemove->right == NULL) {
-                if (parent->left == toRemove) {
-                    parent->left = NULL;
-                }
-                else {
-                    parent->right = NULL;
-                }
-
-                toRemove = NULL;
-                delete toRemove;
-            }
-
-                // Remove node with one child
-            else if (toRemove->left == NULL || toRemove->right == NULL) {
-                AVLNode<Base> *grandChild;
-                if (toRemove->left != NULL) {
-                    grandChild = toRemove->left;
-                    toRemove->left = NULL;
-                }
-                else {
-                    grandChild = toRemove->right;
-                    toRemove->right = NULL;
-                }
-                if (parent->left == toRemove) {
-                    parent->left = grandChild;
-                }
-                else {
-                    parent->right = grandChild;
-                }
-
-                toRemove = NULL;
-                delete toRemove;
-            }
-
-                // Remove node with two children
-            else {
-                AVLNode<Base> *leftMost = toRemove->right;
-                AVLNode<Base> *leftMostParent = toRemove;
-
-                if (leftMost->left != NULL) {
-                    while (leftMost->left != NULL) {
-                        leftMostParent = leftMost;
-                        leftMost = leftMost->left;
-                    }
-                    leftMostParent->left = leftMost->right;
-                    leftMost->right = toRemove->right;
-                }
-                leftMost->left = toRemove->left;
-
-                if (parent->left == toRemove) {
-                    parent->left = leftMost;
-                }
-                else {
-                    parent->right = leftMost;
-                }
-
-                toRemove->left = toRemove->right = NULL;
-
-                toRemove = NULL;
-                delete toRemove;
-            }
+    // CASE 1: Internal Node With 2 Children
+    if (toRemove->left && toRemove->right) {
+        AVLNode<Base> *successor = toRemove->right;
+        while (successor->left) {
+            successor = successor->left;
         }
 
-            // Search Right
-        else if (toRemove->data < item) {
-            parent = toRemove;
-            toRemove = toRemove->right;
-        }
+        // Copy data from successor
+        toRemove->data = successor->getData();
 
-            // Search Left
+        // Recursively delete successor
+        remove(successor->getData());
+    }
+    // CASE 2: Root Node With 1 or 2 Children
+    else if (toRemove == this->root) {
+        if (toRemove->left) {
+            this->root = toRemove->left;
+        }
         else {
-            parent = toRemove;
-            toRemove = toRemove->left;
+            this->root = toRemove->right;
         }
-
-        if (toRemove == NULL) {
-            complete = true;
-        }
+        delete toRemove;
+    }
+    // CASE 3: Internal Node With Left Child Only
+    else if (toRemove->left) {
+        parent->left = toRemove->left;
+    }
+    // CASE 4: Internal Node With Right Child Only OR Leaf
+    else {
+        parent->right = toRemove->right;
     }
 
+    delete toRemove;
+
+    // Rebalance path to root
+    rebalancePathToRoot(**path, depth);
 }
 
 template<class Base>
 void AVLTree<Base>::printLevelOrder(ostream &os) const {
+    // If the tree is empty, return null
+    if (!root) {
+        os << NULL;
+        return;
+    }
 
+    // Traverse tree and print level order
+    queue<AVLNode<Base>> levelOrder;
+    levelOrder.push(this->root);
+
+    while (!levelOrder.empty()) {
+        AVLNode<Base> *temp = levelOrder.front();
+        os << temp->getData() << " ";
+        levelOrder.pop();
+
+        // Push node's left child to the queue
+        if (temp->left != NULL) {
+            levelOrder.push(temp->left);
+        }
+        // Push node's right child to the queue
+        if (temp->right != NULL) {
+            levelOrder.push(temp->right);
+        }
+    }
 }
 
 template<class Base>
 void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
-    for ( ; numOnPath >= 0; --numOnPath) {
+    for ( ; numOnPath-1 >= 0; --numOnPath) {
 
         // Check left height, -1 if null
         int leftHeight = -1;
@@ -308,8 +302,6 @@ void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
 
     }
 }
-
-
 
 
 #endif
