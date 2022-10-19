@@ -126,7 +126,7 @@ void AVLTree<Base>::insert(const Base &item) {
     AVLNode<Base> *childNode = this->root;
 
     int depth = 0;
-    AVLNode<Base> **path = new AVLNode<Base> * [this->root->getHeight()];
+    AVLNode<Base> **path = new AVLNode<Base>*[32];
 
     while (childNode) {
         // Assign parNode to childNode
@@ -162,10 +162,7 @@ void AVLTree<Base>::insert(const Base &item) {
     newNode->updateHeight();
     parNode->updateHeight();
 
-
-
-
-
+    // Rebalance and pass depth as numOnPath
 
 }
 
@@ -264,6 +261,55 @@ void AVLTree<Base>::remove(const Base &item) {
     }
 
 }
+
+template<class Base>
+void AVLTree<Base>::printLevelOrder(ostream &os) const {
+
+}
+
+template<class Base>
+void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
+    for ( ; numOnPath >= 0; --numOnPath) {
+
+        // Check left height, -1 if null
+        int leftHeight = -1;
+        if (*path[numOnPath]->left) {
+            leftHeight = *path[numOnPath]->left->getHeight();
+        }
+
+        // Check right height, -1 if null
+        int rightHeight = -1;
+        if (*path[numOnPath]->right) {
+            rightHeight = *path[numOnPath]->right->getHeight();
+        }
+
+        // Calculate balance
+        int balance = leftHeight - rightHeight;
+
+        // Check for right heavy imbalance
+        if (balance == -2) {
+            if (*path[numOnPath]->right->left->getHeight() - *path[numOnPath]->right->left->getHeight() == 1) {
+                // Double rotate right then left
+                *path[numOnPath]->singleRotateRight();
+            }
+            // Single rotate left
+            *path[numOnPath]->singleRotateLeft();
+        }
+
+        // Check for left heavy imbalance
+        else if (balance == 2) {
+            if (*path[numOnPath]->left->left->getHeight() - *path[numOnPath]->left->right->getHeight() == -1) {
+                // Double rotate left then right
+                *path[numOnPath]->singleRotateLeft();
+            }
+            // Single rotate right
+            *path[numOnPath]->singleRotateRight();
+        }
+
+    }
+}
+
+
 
 
 #endif
