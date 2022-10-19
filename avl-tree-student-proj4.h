@@ -303,6 +303,78 @@ void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
     }
 }
 
+/**
+ * encrypt
+ *
+ * This function encrypts a cleartext message
+ *
+ * Parameters:
+ *      item: encrypts item passed in based on location in BST.
+ *
+ * Return value:
+ *      string: String that is modified to be encrypted.
+ */
+template<class Base>
+string EncryptionTree<Base>::encrypt(const Base &item) const {
+    const AVLNode<Base> *cur = this->root;
+    string path = "r";
+
+    while (cur != NULL) {
+
+        // Equivalent comparison that returns path
+        if (!(cur->getData() < item) && !(item < cur->getData())) {
+            return path;
+        }
+
+            // Traverses left and adds 0
+        else if (item < cur->getData()) {
+            cur = cur->getLeft();
+            path += "0";
+        }
+
+            // Traverses right and adds 1
+        else if (cur->getData() < item) {
+            cur = cur->getRight();
+            path += "1";
+        }
+
+    }
+
+    // If not found, returns ? for invalid word
+    return "?";
+}
+
+/**
+ * decrypt
+ *
+ * This function decrypts a BST with encrypted string passed in.
+ *
+ * Parameters:
+ *      path: string representing encrypted path in BST
+ *
+ * Return value:
+ *      Base: templated data of node
+ */
+template<class Base>
+const Base *EncryptionTree<Base>::decrypt(const string &path) const {
+    const AVLNode<Base> *cur = this->root;
+
+    for (int i = 0; i < path.size(); i++) {
+        if (path.at(i) == 'r') {
+            cur = this->root;
+        } else if (path.at(i) == '0') {
+            cur = cur->getLeft();
+        } else if (path.at(i) == '1') {
+            cur = cur->getRight();
+        } else {
+            cur = NULL;
+        }
+        if (cur == NULL) {
+            return NULL;
+        }
+    }
+    return &(cur->getData());
+}
 
 #endif
 
