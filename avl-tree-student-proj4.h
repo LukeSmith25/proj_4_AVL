@@ -124,7 +124,7 @@ void AVLTree<Base>::insert(const Base &item) {
     AVLNode<Base> *childNode = this->root;
 
     int depth = 0;
-    AVLNode<Base> **path = new AVLNode<Base>*[32];
+    AVLNode<Base> *path[32];
 
     while (childNode) {
         // Assign parNode to childNode
@@ -138,12 +138,12 @@ void AVLTree<Base>::insert(const Base &item) {
         }
         // If newNode < currNode
         else if (item < parNode->getData()) {
-            childNode = childNode->getLeft();
+            childNode = childNode->left;
             depth++;
         }
         // If newNode > currNode
         else {
-            childNode = childNode->getRight();
+            childNode = childNode->right;
             depth++;
         }
     }
@@ -161,7 +161,7 @@ void AVLTree<Base>::insert(const Base &item) {
     parNode->updateHeight();
 
     // Rebalance and pass depth as numOnPath
-    rebalancePathToRoot(**path, depth);
+    rebalancePathToRoot(path, depth);
 }
 
 template<class Base>
@@ -177,20 +177,20 @@ void AVLTree<Base>::remove(const Base &item) {
 
     // Path For Rebalancing
     int depth = 0;
-    AVLNode<Base> **path = new AVLNode<Base>*[32];
+    AVLNode<Base> *path[32];
 
     while (!(toRemove->getData() < item && item < toRemove->getData())) {
         // Move Parent
         parent = toRemove;
         // Add toRemove to path
-        *path[depth] = *toRemove;
+       *path[depth] = *toRemove;
         // If item is less than toRemove, search left
         if (item < toRemove->getData()) {
-            toRemove = toRemove->getLeft();
+            toRemove = toRemove->left;
         }
         // If item is greater than toRemove, search right
         if (toRemove->getData() < item) {
-            toRemove = toRemove->getRight();
+            toRemove = toRemove->right;
         }
         depth++;
     }
@@ -230,7 +230,7 @@ void AVLTree<Base>::remove(const Base &item) {
     delete toRemove;
 
     // Rebalance path to root
-    rebalancePathToRoot(**path, depth);
+    rebalancePathToRoot(path, depth);
 }
 
 template<class Base>
@@ -264,17 +264,18 @@ void AVLTree<Base>::printLevelOrder(ostream &os) const {
 template<class Base>
 void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
     for ( ; numOnPath-1 >= 0; --numOnPath) {
+        path[numOnPath]->updateHeight();
 
         // Check left height, -1 if null
         int leftHeight = -1;
-        if (*path[numOnPath]->left) {
-            leftHeight = *path[numOnPath]->left->getHeight();
+        if (path[numOnPath]->left) {
+            leftHeight = AVLNode<Base>::getHeight(path[numOnPath]->left);
         }
 
         // Check right height, -1 if null
         int rightHeight = -1;
-        if (*path[numOnPath]->right) {
-            rightHeight = *path[numOnPath]->right->getHeight();
+        if (path[numOnPath]->right) {
+            rightHeight = &path[numOnPath]->right->getHeight();
         }
 
         // Calculate balance
@@ -282,22 +283,22 @@ void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
 
         // Check for right heavy imbalance
         if (balance == -2) {
-            if (*path[numOnPath]->right->left->getHeight() - *path[numOnPath]->right->left->getHeight() == 1) {
+            if (path[numOnPath]->right->left->getHeight() - path[numOnPath]->right->left->getHeight() == 1) {
                 // Double rotate right then left
-                *path[numOnPath]->singleRotateRight();
+                path[numOnPath]->singleRotateRight();
             }
             // Single rotate left
-            *path[numOnPath]->singleRotateLeft();
+            path[numOnPath]->singleRotateLeft();
         }
 
         // Check for left heavy imbalance
         else if (balance == 2) {
-            if (*path[numOnPath]->left->left->getHeight() - *path[numOnPath]->left->right->getHeight() == -1) {
+            if (path[numOnPath]->left->left->getHeight() - *path[numOnPath]->left->right->getHeight() == -1) {
                 // Double rotate left then right
-                *path[numOnPath]->singleRotateLeft();
+                path[numOnPath]->singleRotateLeft();
             }
             // Single rotate right
-            *path[numOnPath]->singleRotateRight();
+            path[numOnPath]->singleRotateRight();
         }
 
     }

@@ -9,7 +9,7 @@
  */
 
 #include <iostream>
-#include "bst-student-proj3.h"
+#include "avl-tree-student-proj4.h"
 using namespace std;
 
 int main() {
