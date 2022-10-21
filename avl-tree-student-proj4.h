@@ -275,7 +275,7 @@ void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
         // Check right height, -1 if null
         int rightHeight = -1;
         if (path[numOnPath]->right) {
-            rightHeight = &path[numOnPath]->right->getHeight();
+            rightHeight = getHeight(path[numOnPath]->right);
         }
 
         // Calculate balance

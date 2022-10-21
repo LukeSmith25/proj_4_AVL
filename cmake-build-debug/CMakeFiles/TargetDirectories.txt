@@ -1,3 +1,0 @@
-C:/Users/Luke/CLionProjects/proj_4_AVL/cmake-build-debug/CMakeFiles/proj4_avl.dir
-C:/Users/Luke/CLionProjects/proj_4_AVL/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Luke/CLionProjects/proj_4_AVL/cmake-build-debug/CMakeFiles/rebuild_cache.dir
