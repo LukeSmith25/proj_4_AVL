@@ -1,11 +1,11 @@
 /**
- * file: driver-proj3.cpp
+ * file: driver-proj4.cpp
  * author: Luke Smith
  * course: CSI 3334
- * assignment: project 3
- * due date: October 2, 2022
+ * assignment: project 4
+ * due date: October 23, 2022
  *
- * This file contains the driver for the binary search encryptTree.
+ * This file contains the driver for AVL Tree.
  */
 
 #include <iostream>
@@ -20,7 +20,6 @@ int main() {
     while (getline(cin, input) && !end) {
         string command;
         string value;
-        int i;
 
         // If line is blank skip
         if (input.empty()) {
@@ -43,86 +42,108 @@ int main() {
         if (command == "i") {
             encryptTree.insert(input);
         }
-            // If command is "r", remove
+
+        // If command is "r", remove
         else if (command == "r") {
             encryptTree.remove(input);
         }
-            // If command is "e", encrypt
+
+        // If command is "e", encrypt
         else if (command == "e") {
             string word;
             bool lastWord = false;
-            i = 0;
             // Erase first ' character
             input.erase(0, 1);
 
-            do {
-                pos = input.find(' ');
-                word = input.substr(0, pos);
-
-                if (pos == 0) {
-                    cout << endl;
-                    break;
-                }
-
-                if (pos == string::npos) {
-                    pos = input.find('\'');
+            if (input.at(0) == '\'') {
+                cout << endl;
+            }
+            else {
+                do {
+                    pos = input.find(' ');
                     word = input.substr(0, pos);
-                    lastWord = true;
-                }
-                if (lastWord) {
-                    cout << encryptTree.encrypt(word);
-                } else {
-                    cout << encryptTree.encrypt(word) << " ";
-                }
 
-                input.erase(0, pos+1);
-            } while (!lastWord);
-            cout << endl;
+                    if (pos == 0) {
+                        cout << endl;
+                        break;
+                    }
 
-        } else if (command == "d") {
+                    if (pos == string::npos) {
+                        pos = input.find('\'');
+                        word = input.substr(0, pos);
+                        lastWord = true;
+                    }
+                    if (lastWord) {
+                        cout << encryptTree.encrypt(word) << endl;
+                    } else {
+                        cout << encryptTree.encrypt(word) << " ";
+                    }
+
+                    input.erase(0, pos+1);
+                } while (!lastWord);
+            }
+
+        }
+
+        // If command is "d", decrypt
+        else if (command == "d") {
             string word;
             bool lastWord = false;
-            i = 0;
             // Erase first ' character
             input.erase(0, 1);
+            if (input.at(0) == '\'') {
+                cout << endl;
+            }
 
-            do {
-                pos = input.find(' ');
-                word = input.substr(0, pos);
-
-
-                if (pos == 0) {
-                    cout << endl;
-                    break;
-                }
-
-                if (pos == string::npos) {
-                    pos = input.find('\'');
+            else {
+                do {
+                    pos = input.find(' ');
                     word = input.substr(0, pos);
-                    lastWord = true;
-                }
-                if (encryptTree.decrypt(word) == NULL) {
-                    if (lastWord) {
-                        cout << "?" << endl;
-                    } else {
-                        cout << "? ";
-                    }
-                } else {
-                    if (lastWord) {
-                        cout << *encryptTree.decrypt(word) << endl;
-                    } else {
-                        cout << *encryptTree.decrypt(word) << " ";
-                    }
-                }
-                input.erase(0, pos+1);
-            } while (!lastWord);
-            cout << endl;
 
-        } else if (command == "p") {
+
+                    if (pos == 0) {
+                        cout << endl;
+                        break;
+                    }
+
+                    if (pos == string::npos) {
+                        pos = input.find('\'');
+                        word = input.substr(0, pos);
+                        lastWord = true;
+                    }
+                    if (encryptTree.decrypt(word) == NULL) {
+                        if (lastWord) {
+                            cout << "?" << endl;
+                        } else {
+                            cout << "? ";
+                        }
+                    } else {
+                        if (lastWord) {
+                            cout << *encryptTree.decrypt(word) << endl;
+                        } else {
+                            cout << *encryptTree.decrypt(word) << " ";
+                        }
+                    }
+                    input.erase(0, pos+1);
+                } while (!lastWord);
+            }
+        }
+
+        // If command is "p", print preorder
+        else if (command == "p") {
             encryptTree.printPreorder();
-        } else if (command == "q") {
+        }
+
+        // If command is "l", print level order
+        else if (command == "l") {
+            encryptTree.printLevelOrder();
+        }
+
+        // If command is "q", quit
+        else if (command == "q") {
             end = true;
-        } else {
+        }
+        else {
             continue;
         }
     }
