@@ -1,4 +1,13 @@
-#ifndef AVL_TREE_STUDENT_PROJ4 
+/**
+ * file: avl-tree-student-proj4.h
+ * author: Luke Smith
+ * course: CSI 3334
+ * assignment: project 4
+ * due date: October 24, 2022
+ *
+ * Implementation for the AVL tree.
+ */
+#ifndef AVL_TREE_STUDENT_PROJ4
 #define AVL_TREE_STUDENT_PROJ4 
 
 #include "avl-tree-prof-proj4.h"
@@ -11,6 +20,15 @@
  * #include the professor file.
  */
 
+/**
+ * AVLNode Destructor
+ *
+ * This function is the default destructor for AVLNode.
+ *
+ * Parameters: None.
+ *
+ * Return value: None.
+ */
 template<class Base>
 AVLNode<Base>::~AVLNode() {
     if (getLeft()) {
@@ -21,6 +39,17 @@ AVLNode<Base>::~AVLNode() {
     }
 }
 
+/**
+ * printPreorder
+ *
+ * This function traverses the tree and prints it in preorder.
+ *
+ * Parameters:
+ *      -os: output stream containing preorder traversal
+ *      -indent: indentation representing depth of node in tree
+ *
+ * Return value: None.
+ */
 template<class Base>
 void AVLNode<Base>::printPreorder(ostream &os, string indent) const {
     if (this) {
@@ -34,6 +63,15 @@ void AVLNode<Base>::printPreorder(ostream &os, string indent) const {
     }
 }
 
+/**
+ * minNode
+ *
+ * This function returns the leftmost node.
+ *
+ * Parameters: None.
+ *
+ * Return value: Leftmost AVLNode.
+ */
 template<class Base>
 const AVLNode<Base> *AVLNode<Base>::minNode() const {
     if (getLeft() != NULL) {
@@ -43,6 +81,15 @@ const AVLNode<Base> *AVLNode<Base>::minNode() const {
     }
 }
 
+/**
+ * maxNode
+ *
+ * This function returns the rightmost node.
+ *
+ * Parameters: None.
+ *
+ * Return value: Rightmost AVLNode.
+ */
 template<class Base>
 const AVLNode<Base> *AVLNode<Base>::maxNode() const {
     if (getRight() != NULL) {
@@ -52,6 +99,15 @@ const AVLNode<Base> *AVLNode<Base>::maxNode() const {
     }
 }
 
+/**
+ * singleRotateLeft
+ *
+ * This function rotates left at node called on.
+ *
+ * Parameters: None.
+ *
+ * Return value: Parent pointer.
+ */
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
     AVLNode<Base> *leftMost = this->right->left;
@@ -69,6 +125,15 @@ AVLNode<Base> *AVLNode<Base>::singleRotateLeft() {
     return child;
 }
 
+/**
+ * singleRotateRight
+ *
+ * This function rotates right at node called on.
+ *
+ * Parameters: None.
+ *
+ * Return value: Parent pointer.
+ */
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::singleRotateRight() {
     AVLNode<Base> *rightMost = this->left->right;
@@ -86,18 +151,46 @@ AVLNode<Base> *AVLNode<Base>::singleRotateRight() {
     return child;
 }
 
+/**
+ * doubleRotateLeftRight
+ *
+ * This function rotates left at node called on, then right.
+ *
+ * Parameters: None.
+ *
+ * Return value: Parent pointer.
+ */
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::doubleRotateLeftRight() {
     this->left = this->left->singleRotateLeft();
     return this->singleRotateRight();
 }
 
+/**
+ * doubleRotateRightLeft
+ *
+ * This function rotates right at node called on, then left.
+ *
+ * Parameters: None.
+ *
+ * Return value: Parent pointer.
+ */
 template<class Base>
 AVLNode<Base> *AVLNode<Base>::doubleRotateRightLeft() {
     this->right = this->right->singleRotateRight();
     return this->singleRotateLeft();
 }
 
+/**
+ * insert
+ *
+ * Inserts node into AVL tree.
+ *
+ * Parameters:
+ *      item: item to be inserted into tree
+ *
+ * Return value: None.
+ */
 template<class Base>
 void AVLTree<Base>::insert(const Base &item) {
     // Declare new node to be inserted
@@ -155,6 +248,16 @@ void AVLTree<Base>::insert(const Base &item) {
 
 }
 
+/**
+ * remove
+ *
+ * This function removes a node from the AVL tree.
+ *
+ * Parameters:
+ *      item: item to be removed
+ *
+ * Return value: None.
+ */
 template<class Base>
 void AVLTree<Base>::remove(const Base &item) {
     AVLNode<Base> *toRemove = this->root;
@@ -249,9 +352,9 @@ void AVLTree<Base>::remove(const Base &item) {
     // CASE 4: Internal Node With Right Child Only
     else if (toRemove->right) {
         if(parent->left == toRemove){
-            parent->left = toRemove->left;
-        } else{
-            parent->right = toRemove->left;
+            parent->left = toRemove->right;
+        } else {
+            parent->right = toRemove->right;
         }
         toRemove->right = nullptr;
         delete toRemove;
@@ -273,6 +376,16 @@ void AVLTree<Base>::remove(const Base &item) {
     }
 }
 
+/**
+ * printLevelOrder
+ *
+ * This function traverses the tree and prints it in level order.
+ *
+ * Parameters:
+ *      -os: output stream containing preorder traversal
+ *
+ * Return value: None.
+ */
 template<class Base>
 void AVLTree<Base>::printLevelOrder(ostream &os) const {
     // If the tree is empty, return null
@@ -322,7 +435,17 @@ void AVLTree<Base>::printLevelOrder(ostream &os) const {
         os << endl;
     }
 }
-
+/**
+ * rebalancePathToRoot
+ *
+ * This function traverses the path from bottom to top and rebalances nodes.
+ *
+ * Parameters:
+ *      -path: array of pointers for nodes
+ *      -numOnPath: number of nodes to traverse
+ *
+ * Return value: None.
+ */
 template<class Base>
 void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
     for ( ; numOnPath >= 0; numOnPath--) {

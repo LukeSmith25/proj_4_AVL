@@ -15,10 +15,91 @@ using namespace std;
 int main() {
     EncryptionTree<string> encryptTree;
     string input;
+    char comm;
     bool end = false;
 
-    while (getline(cin, input) && !end) {
-        string command;
+    while (cin >> comm && !end) {
+
+        switch(comm){
+            case 'l':
+                encryptTree.printLevelOrder(cout);
+                break;
+
+            case 'p':
+                encryptTree.printPreorder(cout);
+                break;
+
+            case 'i':
+                cin >> ws >> input >> ws;
+                encryptTree.insert(input);
+                break;
+            case 'r':
+                cin >> ws >> input >> ws;
+                encryptTree.remove(input);
+                break;
+
+            case 'e':
+                while(comm != '\''){
+                    cin.get(comm);
+                }
+                cin >> input;
+                if(input.at(0) != '\''){
+                    while(input.at(input.size() - 1) != '\''){
+                        cout << encryptTree.encrypt(input) << " ";
+                        cin >> input;
+                    }
+                    if(input.at(input.size() - 1) == 'q'){
+                        end = true;
+                        input.erase(input.size() - 2);
+                    }else{
+                        input.erase(input.size() - 1);
+                    }
+
+                    cout << encryptTree.encrypt(input);
+
+                } else if(input.at(input.size() - 1) == 'q'){
+                    end = true;
+                }
+                cout << endl;
+
+                break;
+
+            case 'd':
+                while(comm != '\''){
+                    cin.get(comm);
+                }
+                cin >> input;
+                if(input.at(0) != '\''){
+                    while(input.at(input.size() - 1) != '\''){
+                        if(encryptTree.decrypt(input)){
+                            cout << *encryptTree.decrypt(input) << " ";
+                        } else{
+                            cout << "?" << " ";
+                        }
+                        cin >> input;
+
+                    }
+                    if(input.at(input.size() - 1) == 'q'){
+                        end = true;
+                        input.erase(input.size() - 2);
+                    }else{
+                        input.erase(input.size() - 1);
+                    }
+                    if(encryptTree.decrypt(input)){
+                        cout << *encryptTree.decrypt(input);
+                    } else{
+                        cout << "?";
+                    }
+                } else if(input.at(input.size() - 1) == 'q'){
+                    end = true;
+                }
+                cout << endl;
+
+
+                break;
+        }
+
+        /*string command;
         string value;
 
         // If line is blank skip
@@ -45,6 +126,9 @@ int main() {
 
         // If command is "r", remove
         else if (command == "r") {
+            *//*if(input.size() == 1){
+                cout << "NULL" << endl;
+            }*//*
             encryptTree.remove(input);
         }
 
@@ -82,6 +166,9 @@ int main() {
                     input.erase(0, pos+1);
                 } while (!lastWord);
             }
+           if((int)input.find('q') >= pos && input.find('q') != string::npos){
+               end = true;
+           }
 
         }
 
@@ -127,6 +214,10 @@ int main() {
                     input.erase(0, pos+1);
                 } while (!lastWord);
             }
+
+            if((int)input.find('q') >= pos && input.find('q') != string::npos){
+                end = true;
+            }
         }
 
         // If command is "p", print preorder
@@ -140,12 +231,12 @@ int main() {
         }
 
         // If command is "q", quit
-        else if (command == "q") {
+        else if (command.at(0) == 'q') {
             end = true;
         }
         else {
             continue;
-        }
+        }*/
     }
     return 0;
 }
