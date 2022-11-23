@@ -193,9 +193,6 @@ AVLNode<Base> *AVLNode<Base>::doubleRotateRightLeft() {
  */
 template<class Base>
 void AVLTree<Base>::insert(const Base &item) {
-    // Declare new node to be inserted
-    AVLNode<Base> *newNode = new AVLNode<Base>(item);
-
     // Create parent and child pointers
     AVLNode<Base> *parNode = NULL;
     AVLNode<Base> *childNode = this->root;
@@ -223,6 +220,9 @@ void AVLTree<Base>::insert(const Base &item) {
             childNode = childNode->right;
         }
     }
+
+    // Declare new node to be inserted
+    AVLNode<Base> *newNode = new AVLNode<Base>(item);
 
     // Insertion
     if (!root) {
@@ -260,6 +260,7 @@ void AVLTree<Base>::insert(const Base &item) {
  */
 template<class Base>
 void AVLTree<Base>::remove(const Base &item) {
+    // Declare ptr to node to remove
     AVLNode<Base> *toRemove = this->root;
 
     // Check for empty tree
