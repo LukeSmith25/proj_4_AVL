@@ -13,13 +13,6 @@
 #include "avl-tree-prof-proj4.h"
 #include <queue>
 
-/* Place your implementation of the AVLNode, AVLNode, and EncryptionTree classes
- * here.
- *
- * Your driver should #include this file, which (as you can see above) will also
- * #include the professor file.
- */
-
 /**
  * AVLNode Destructor
  *

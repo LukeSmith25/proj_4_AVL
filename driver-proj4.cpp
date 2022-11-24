@@ -9,16 +9,34 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "avl-tree-student-proj4.h"
 using namespace std;
 
+/**
+ * main()
+ *
+ * This is the main driver for the AVL classes.
+ *
+ * Parameters: None.
+ *
+ * Return value:
+ *      int: 0 representing successful run.
+ */
 int main() {
     EncryptionTree<string> encryptTree;
-    string input;
+    string line, input;
     char comm;
     bool end = false;
 
-    while (cin >> comm && !end) {
+    while (cin.get(comm) && !end) {
+        // Last word for encrypt & decrypt
+        bool lastWord = false;
+        char next;
+        // Stringstream init
+        stringstream curLine;
+        curLine.clear();
+        curLine.str("");
 
         switch(comm){
             case 'l':
@@ -30,213 +48,89 @@ int main() {
                 break;
 
             case 'i':
-                cin >> ws >> input >> ws;
+                getline(cin, line);
+                curLine.str(line);
+                curLine >> input;
                 encryptTree.insert(input);
                 break;
+
             case 'r':
-                cin >> ws >> input >> ws;
+                getline(cin, line);
+                curLine.str(line);
+                curLine >> input;
                 encryptTree.remove(input);
                 break;
 
             case 'e':
-                while(comm != '\''){
-                    cin.get(comm);
-                }
-                cin >> input;
-                if(input.at(0) != '\''){
-                    while(input.at(input.size() - 1) != '\''){
-                        cout << encryptTree.encrypt(input) << " ";
-                        cin >> input;
-                    }
-                    if(input.at(input.size() - 1) == 'q'){
-                        end = true;
-                        input.erase(input.size() - 2);
-                    }else{
-                        input.erase(input.size() - 1);
-                    }
+                // Reads until first cleartext
+                getline(cin, line, '\'');
+                // Reads until last cleartext
+                getline(cin, line, '\'');
 
+                // Clear and initialize stringstream
+                curLine.clear();
+                curLine.str(line);
+
+                while (curLine >> input) {
                     cout << encryptTree.encrypt(input);
-
-                } else if(input.at(input.size() - 1) == 'q'){
-                    end = true;
+                    if (!curLine.eof()){
+                        curLine >> ws;
+                        if (!curLine.eof()) {
+                            cout << " ";
+                        }
+                    }
                 }
                 cout << endl;
+
+                // Peak to see if line is empty
+                if (cin.peek() != '\n') {
+                    cin >> ws;
+                    getline(cin, line);
+                    if (line.at(0) == 'q') {
+                        end = true;
+                    }
+                }
 
                 break;
 
             case 'd':
-                while(comm != '\''){
-                    cin.get(comm);
-                }
-                cin >> input;
-                if(input.at(0) != '\''){
-                    while(input.at(input.size() - 1) != '\''){
-                        if(encryptTree.decrypt(input)){
-                            cout << *encryptTree.decrypt(input) << " ";
-                        } else{
-                            cout << "?" << " ";
-                        }
-                        cin >> input;
+                // Reads until first cleartext
+                getline(cin, line, '\'');
+                // Reads until last cleartext
+                getline(cin, line, '\'');
 
-                    }
-                    if(input.at(input.size() - 1) == 'q'){
-                        end = true;
-                        input.erase(input.size() - 2);
-                    }else{
-                        input.erase(input.size() - 1);
-                    }
-                    if(encryptTree.decrypt(input)){
+                // Clear and initialize stringstream
+                curLine.clear();
+                curLine.str(line);
+
+                // While cleartext is not empty
+                while (curLine >> input) {
+                    if (encryptTree.decrypt(input)) {
                         cout << *encryptTree.decrypt(input);
-                    } else{
+                    } else {
                         cout << "?";
                     }
-                } else if(input.at(input.size() - 1) == 'q'){
-                    end = true;
+                    if (!curLine.eof()){
+                        curLine >> ws;
+                        if (!curLine.eof()) {
+                            cout << " ";
+                        }
+                    }
                 }
                 cout << endl;
 
+                // Read in whitespace
+                // Peak to see if line is empty
+                if (cin.peek() != '\n') {
+                    cin >> ws;
+                    getline(cin, line);
+                    if (line.at(0) == 'q') {
+                        end = true;
+                    }
+                }
 
                 break;
         }
-
-        /*string command;
-        string value;
-
-        // If line is blank skip
-        if (input.empty()) {
-            continue;
-        }
-
-        // Find location of whitespace and save everything prior
-        size_t pos = input.find(' ');
-        command = input.at(0);
-
-        // Erase command from input including whitespace
-        input.erase(0, pos+1);
-
-        // If the command is not 1 char, skip iteration
-        if (command.size() != 1) {
-            continue;
-        }
-
-        // If command is "i", insert
-        if (command == "i") {
-            encryptTree.insert(input);
-        }
-
-        // If command is "r", remove
-        else if (command == "r") {
-            *//*if(input.size() == 1){
-                cout << "NULL" << endl;
-            }*//*
-            encryptTree.remove(input);
-        }
-
-        // If command is "e", encrypt
-        else if (command == "e") {
-            string word;
-            bool lastWord = false;
-            // Erase first ' character
-            input.erase(0, 1);
-
-            if (input.at(0) == '\'') {
-                cout << endl;
-            }
-            else {
-                do {
-                    pos = input.find(' ');
-                    word = input.substr(0, pos);
-
-                    if (pos == 0) {
-                        cout << endl;
-                        break;
-                    }
-
-                    if (pos == string::npos) {
-                        pos = input.find('\'');
-                        word = input.substr(0, pos);
-                        lastWord = true;
-                    }
-                    if (lastWord) {
-                        cout << encryptTree.encrypt(word) << endl;
-                    } else {
-                        cout << encryptTree.encrypt(word) << " ";
-                    }
-
-                    input.erase(0, pos+1);
-                } while (!lastWord);
-            }
-           if((int)input.find('q') >= pos && input.find('q') != string::npos){
-               end = true;
-           }
-
-        }
-
-        // If command is "d", decrypt
-        else if (command == "d") {
-            string word;
-            bool lastWord = false;
-            // Erase first ' character
-            input.erase(0, 1);
-            if (input.at(0) == '\'') {
-                cout << endl;
-            }
-
-            else {
-                do {
-                    pos = input.find(' ');
-                    word = input.substr(0, pos);
-
-
-                    if (pos == 0) {
-                        cout << endl;
-                        break;
-                    }
-
-                    if (pos == string::npos) {
-                        pos = input.find('\'');
-                        word = input.substr(0, pos);
-                        lastWord = true;
-                    }
-                    if (encryptTree.decrypt(word) == NULL) {
-                        if (lastWord) {
-                            cout << "?" << endl;
-                        } else {
-                            cout << "? ";
-                        }
-                    } else {
-                        if (lastWord) {
-                            cout << *encryptTree.decrypt(word) << endl;
-                        } else {
-                            cout << *encryptTree.decrypt(word) << " ";
-                        }
-                    }
-                    input.erase(0, pos+1);
-                } while (!lastWord);
-            }
-
-            if((int)input.find('q') >= pos && input.find('q') != string::npos){
-                end = true;
-            }
-        }
-
-        // If command is "p", print preorder
-        else if (command == "p") {
-            encryptTree.printPreorder();
-        }
-
-        // If command is "l", print level order
-        else if (command == "l") {
-            encryptTree.printLevelOrder();
-        }
-
-        // If command is "q", quit
-        else if (command.at(0) == 'q') {
-            end = true;
-        }
-        else {
-            continue;
-        }*/
     }
     return 0;
 }
