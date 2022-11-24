@@ -77,6 +77,10 @@ int main() {
                 getline(cin, line);
                 curLine.str(line);
                 curLine >> input;
+                //cout << "REMOVE: " << input << endl;
+                if (input == "83") {
+
+                }
                 encryptTree.remove(input);
 
                 break;
