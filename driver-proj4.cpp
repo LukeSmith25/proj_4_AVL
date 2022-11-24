@@ -29,7 +29,7 @@ int main() {
     char comm;
     bool end = false;
 
-    while (cin.get(comm) && !end) {
+    while (cin >> comm && !end) {
         // Last word for encrypt & decrypt
         bool lastWord = false;
         char next;
@@ -41,10 +41,28 @@ int main() {
         switch(comm){
             case 'l':
                 encryptTree.printLevelOrder(cout);
+
+                if (cin.peek() != '\n'){
+                    cin >> ws;
+                    if (cin.peek() == 'q') {
+                        end = true;
+                        break;
+                    }
+                }
+
                 break;
 
             case 'p':
                 encryptTree.printPreorder(cout);
+
+                if (cin.peek() != '\n'){
+                    cin >> ws;
+                    if (cin.peek() == 'q') {
+                        end = true;
+                        break;
+                    }
+                }
+
                 break;
 
             case 'i':
@@ -52,6 +70,7 @@ int main() {
                 curLine.str(line);
                 curLine >> input;
                 encryptTree.insert(input);
+
                 break;
 
             case 'r':
@@ -59,6 +78,7 @@ int main() {
                 curLine.str(line);
                 curLine >> input;
                 encryptTree.remove(input);
+
                 break;
 
             case 'e':
@@ -131,6 +151,14 @@ int main() {
 
                 break;
         }
+        /*
+        if (!curLine.eof()){
+            curLine >> ws;
+            if (curLine.peek() == 'q') {
+                end = true;
+            }
+        }
+        */
     }
     return 0;
 }
