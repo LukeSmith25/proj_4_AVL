@@ -5,7 +5,7 @@
  * assignment: project 4
  * due date: October 23, 2022
  *
- * This file contains the driver for AVL Tree.
+ * This file contains the driver for AVLNode, AVLTree, and EncryptionTree.
  */
 
 #include <iostream>
@@ -16,7 +16,7 @@ using namespace std;
 /**
  * main()
  *
- * This is the main driver for the AVL classes.
+ * This is the main driver for the implementation of the AVL Encryption tree.
  *
  * Parameters: None.
  *
@@ -71,16 +71,15 @@ int main() {
                 curLine >> input;
                 encryptTree.insert(input);
 
+                encryptTree.verifySearchOrder();
+                encryptTree.verifyBalance();
+
                 break;
 
             case 'r':
                 getline(cin, line);
                 curLine.str(line);
                 curLine >> input;
-                //cout << "REMOVE: " << input << endl;
-                if (input == "83") {
-
-                }
                 encryptTree.remove(input);
 
                 break;
@@ -155,14 +154,6 @@ int main() {
 
                 break;
         }
-        /*
-        if (!curLine.eof()){
-            curLine >> ws;
-            if (curLine.peek() == 'q') {
-                end = true;
-            }
-        }
-        */
     }
     return 0;
 }

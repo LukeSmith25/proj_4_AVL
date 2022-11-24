@@ -5,7 +5,7 @@
  * assignment: project 4
  * due date: October 24, 2022
  *
- * Implementation for the AVL tree.
+ * Implementation for the AVLNode, AVLTree, and EncryptionTree classes.
  */
 #ifndef AVL_TREE_STUDENT_PROJ4
 #define AVL_TREE_STUDENT_PROJ4 
@@ -16,7 +16,7 @@
 /**
  * AVLNode Destructor
  *
- * This function is the default destructor for AVLNode.
+ * This function is the default destructor for an AVLNode.
  *
  * Parameters: None.
  *
@@ -67,11 +67,10 @@ void AVLNode<Base>::printPreorder(ostream &os, string indent) const {
  */
 template<class Base>
 const AVLNode<Base> *AVLNode<Base>::minNode() const {
-    if (getLeft() != NULL) {
-        getLeft()->minNode();
-    } else {
-        return this;
+    if (this->left) {
+        this->left->minNode();
     }
+    return this;
 }
 
 /**
@@ -85,11 +84,10 @@ const AVLNode<Base> *AVLNode<Base>::minNode() const {
  */
 template<class Base>
 const AVLNode<Base> *AVLNode<Base>::maxNode() const {
-    if (getRight() != NULL) {
-        getRight()->maxNode();
-    } else {
-        return this;
+    if (this->right) {
+        this->right->maxNode();
     }
+    return this;
 }
 
 /**
@@ -228,11 +226,7 @@ void AVLTree<Base>::insert(const Base &item) {
         parNode->right = newNode;
     }
 
-    // Update parent height
-    newNode->updateHeight();
-    if (parNode) {
-        parNode->updateHeight();
-    }
+    path[++depth] = newNode;
 
     // Rebalance and pass depth as numOnPath
     if (depth >= 0) {
@@ -266,7 +260,6 @@ void AVLTree<Base>::remove(const Base &item) {
     // Path For Rebalancing
     int depth = -1;
     AVLNode<Base> *path[32];
-    path[++depth] = root;
 
     while (toRemove) {
 
@@ -300,24 +293,23 @@ void AVLTree<Base>::remove(const Base &item) {
     // CASE 1: Internal Node With 2 Children
     if (toRemove->left && toRemove->right) {
         AVLNode<Base> *successor = toRemove->right;
-        path[++depth] = successor;
+
+        path[++depth] = toRemove;
+
         while (successor->left) {
-            successor = successor->left;
             path[++depth] = successor;
+            successor = successor->left;
         }
 
         // Copy data from successor
         toRemove->data = successor->getData();
 
-        if(toRemove->right == successor){
-            path[++depth] = toRemove;
-            toRemove->right = successor->right;
-            successor->right = NULL;
+        if(path[depth] != toRemove){
+            path[depth]->left = successor->right;
         } else{
-            // Recursively delete successor
-            path[depth - 1]->left = path[depth]->right;
-            path[depth--]->right = NULL;
+            path[depth]->right = successor->right;
         }
+        successor->right = NULL;
 
         delete successor;
     }
@@ -362,7 +354,6 @@ void AVLTree<Base>::remove(const Base &item) {
         }
         delete toRemove;
     }
-
 
     // Rebalance path to root
     if (depth >= 0) {
@@ -429,6 +420,7 @@ void AVLTree<Base>::printLevelOrder(ostream &os) const {
         os << endl;
     }
 }
+
 /**
  * rebalancePathToRoot
  *
@@ -453,7 +445,7 @@ void AVLTree<Base>::rebalancePathToRoot(AVLNode<Base> **path, int numOnPath) {
 
         AVLNode<Base> *replacement = NULL;
         // Check for right heavy imbalance
-        if (lh - rh == -2) {
+        if (lh + 1 < rh) {
             int rlh = AVLNode<Base>::getHeight(path[numOnPath]->right->left);
             int rrh = AVLNode<Base>::getHeight(path[numOnPath]->right->right);
             if (rlh - rrh == 1) {
